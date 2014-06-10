@@ -12,27 +12,6 @@
  */
 
 
-  /*wp_register_style( 'ao-issues-style', plugins_url( 'quiz.css', __FILE__ ) );
-wp_enqueue_style( 'ao-issues-style' );
-wp_enqueue_script( 'ao-issues', plugins_url( 'quiz.js', __FILE__ ) );
-
-add_shortcode('pathquiz', 'ao_issues_processor');
-
-$ao_issues_id = 0;
-
-function ao_issues_processor( $attributes, $content = null ) {
-  global $post;
-  extract( shortcode_atts( array( 'url' => '' ), $attributes ) );
-  
-  $content = get_post_meta( $post->ID, '_ao_issues_json', true );
-  if ($content == "") { $content = "null"; }
-
-  return '<div id="ao-issues-' . $ao_issues_id . '"></div><script>jQuery(function(){var ao_issues = new AOPathQuiz("#ao-issues-' . $ao_issues_id . '",' . $content . ',"' . $url . '");});</script>';
-  $ao_issues_id++;
-  }*/
-
-
-
 /**
  * Adds a box to the main column on the Post and Page edit screens.
  */
@@ -128,4 +107,11 @@ function ao_issues_save_meta_box_data( $post_id ) {
   update_post_meta( $post_id, '_ao_issues_year', $year );
   update_post_meta( $post_id, '_ao_issues_number', $number );
 }
+
 add_action( 'save_post', 'ao_issues_save_meta_box_data' );
+
+function init_ao_issue_pages() {
+  $menu_hookname = add_object_page( 'Issue Management', 'Issues', 'manage_options', 'wp-issues/issue-admin.php');
+}
+
+add_action( 'admin_menu', 'init_ao_issue_pages');
