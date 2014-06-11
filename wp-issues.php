@@ -21,7 +21,6 @@ function ao_issues_add_meta_box() {
 		 'ao_issues_meta_box_callback',
 		 'post','side','high');
 }
-add_action( 'add_meta_boxes', 'ao_issues_add_meta_box' );
 
 /**
  * Prints the box content.
@@ -108,10 +107,13 @@ function ao_issues_save_meta_box_data( $post_id ) {
   update_post_meta( $post_id, '_ao_issues_number', $number );
 }
 
-add_action( 'save_post', 'ao_issues_save_meta_box_data' );
-
 function init_ao_issue_pages() {
   $menu_hookname = add_object_page( 'Issue Management', 'Issues', 'manage_options', 'wp-issues/issue-admin.php');
 }
 
-add_action( 'admin_menu', 'init_ao_issue_pages');
+
+if (is_admin()) {
+  add_action( 'add_meta_boxes', 'ao_issues_add_meta_box' );
+  add_action( 'save_post', 'ao_issues_save_meta_box_data' );
+  add_action( 'admin_menu', 'init_ao_issue_pages');
+}
