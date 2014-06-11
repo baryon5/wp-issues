@@ -4,7 +4,7 @@ if ($_POST["action"] == "schedule") {
   $posts = get_posts_in_issue($the_issue,$the_year);
   while ($posts->have_posts()) {
     $posts->the_post();
-    $post->post_status = "future";
+    $post->post_status = "publish";
 
     $date = $_POST["year"] . "-" . $_POST["month"] . "-" . $_POST["day"] . " ";
     $date = $date . $_POST["time"];
