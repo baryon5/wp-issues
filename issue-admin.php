@@ -19,6 +19,9 @@ function get_posts_in_issue($issue,$year) {
 								     'value' => $issue,
 								     )
 							       ),
+					 'nopaging' => true,
+					 'orderby' => 'title',
+					 'order' => 'ASC',
 					 ));
     return $posts_in_issue;
   }
@@ -91,10 +94,7 @@ foreach ( $number_result as $number ) {
     while ($issue_posts->have_posts()) {
       $issue_posts->the_post();
       echo '<li>' . get_the_title() . " [Status: $post->post_status] (Date: ";
-      the_date();
-      echo " ";
-      the_time();
-      echo ") - ";
+      echo get_the_date() . " @ " . get_the_time() . ") - ";
       edit_post_link("edit this post");
       echo "</li>";
       echo '<!--'; print_r($post); echo '-->';
