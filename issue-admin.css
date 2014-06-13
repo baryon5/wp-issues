@@ -1,0 +1,14 @@
+
+
+table.articles-in-issue {
+    border-collapse: collapse;
+    margin-bottom: 1em;
+    width: 100%;
+}
+
+.articles-in-issue td {
+    border-collapse: collapse;
+    border: 1px dashed;
+    padding: 0.4em;
+
+}

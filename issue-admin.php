@@ -40,6 +40,8 @@ if (isset($_POST["action"])) {
   require("actions.php");
 }
 
+wp_enqueue_style("issue-admin",plugins_url("issue-admin.css",__FILE__));
+
 ?>
 
 <div class="wrap">
@@ -50,24 +52,9 @@ if (isset($_POST["action"])) {
 
 <input type="hidden" name="page" value="wp-issues/issue-admin.php" />
 
-<p><label for="issue-year">Year:
-<select name="issue-year">
-<?php
-   $year_query = "SELECT DISTINCT meta_value FROM  $wpdb->postmeta WHERE meta_key = '_ao_issues_year' ORDER BY meta_value DESC";
-   $year_result = $wpdb->get_results( $year_query );
+<p>
 
-   $years = array();
-
-foreach ( $year_result as $year ) {
-  if ($year->meta_value == $the_year)
-    echo "<option selected=\"selected\">$year->meta_value</option>";
-  else
-    echo "<option>$year->meta_value</option>";
-}
-?>
-</select></label></p>
-
-<p><label for="issue-number">Issue Number:
+<label for="issue-number">Issue 
 <select name="issue-number">
 <?php
    $number_query = "SELECT DISTINCT meta_value FROM  $wpdb->postmeta WHERE meta_key = '_ao_issues_number' ORDER BY meta_value DESC";
@@ -82,7 +69,24 @@ foreach ( $number_result as $number ) {
     echo "<option>$number->meta_value</option>";
 }
 ?>
-</select></label></p>
+</select></label>
+
+<label for="issue-year"> of
+<select name="issue-year">
+<?php
+   $year_query = "SELECT DISTINCT meta_value FROM  $wpdb->postmeta WHERE meta_key = '_ao_issues_year' ORDER BY meta_value DESC";
+   $year_result = $wpdb->get_results( $year_query );
+
+   $years = array();
+
+foreach ( $year_result as $year ) {
+  if ($year->meta_value == $the_year)
+    echo "<option selected=\"selected\">$year->meta_value</option>";
+  else
+    echo "<option>$year->meta_value</option>";
+}
+?>
+</select></label>
 
 <input type="submit" class="button" value="Get Posts" />
 
@@ -90,19 +94,36 @@ foreach ( $number_result as $number ) {
   $issue_posts = get_posts_in_issue($the_issue,$the_year);
   if ($issue_posts) {
     echo "<h3>Posts in Issue $the_issue of $the_year</h3>";
-    echo '<ul style="list-style: initial; margin-left: 1em">';
-    while ($issue_posts->have_posts()) {
-      $issue_posts->the_post();
-      echo '<li>' . get_the_title() . " <strong>in</strong> <em>";
-      echo get_the_category()[0]->cat_name . "</em>";
-      echo " [Status: $post->post_status] (Date: ";
-      echo get_the_date() . " @ " . get_the_time() . ") - ";
-      edit_post_link("edit this post");
-      echo "</li>";
-      echo '<!--'; print_r($post); echo '-->';
-    }
-    echo '</ul>';
     ?>
+    <table class="articles-in-issue">
+    <thead><tr>
+      <td>Title</td>
+      <td>Category</td>
+      <td>State</td>
+      <td>Date and Time</td>
+      <td>Post Location</td>
+      <td>Edit</td>
+    </tr></thead>
+    <?php
+    while ($issue_posts->have_posts()) {
+      echo '<tr>';
+      $issue_posts->the_post();
+      echo '<td>' . get_the_title() . "</td>";
+      $categories = get_the_category();
+      echo '<td>' . array_shift($categories)->cat_name;
+      foreach ($categories as $category) {
+	echo ', ' . $category->cat_name;
+      }
+      echo '</td>';
+      echo '<td>' . $post->post_status . "</td>";
+      echo '<td>' . get_the_date() . " @ " . get_the_time() . "</td>";
+      echo '<td>' . get_post_meta($post->ID, "_oxygen_post_location", true) . '</td>';
+      echo '<td>'; edit_post_link("Edit"); echo '</td>';
+      //echo '<!--'; print_r($post); echo '-->';
+      echo "</tr>";
+    }
+    ?>
+    </table>
     
     <div class="timestamp-wrap">
     <select id="month" name="month">
