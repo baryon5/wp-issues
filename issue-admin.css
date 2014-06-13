@@ -1,14 +1,18 @@
 
 
-table.articles-in-issue {
+/*table.articles-in-issue {
     border-collapse: collapse;
     margin-bottom: 1em;
     width: 100%;
 }
+*/
+.tablesorter-default {
+    background-color: transparent;
+}
 
-.articles-in-issue td {
-    border-collapse: collapse;
+.tablesorter.articles-in-issue td {
+    /*border-collapse: collapse;
     border: 1px dashed;
-    padding: 0.4em;
-
+    padding: 0.4em;*/
+    background-color: transparent;
 }

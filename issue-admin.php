@@ -40,7 +40,11 @@ if (isset($_POST["action"])) {
   require("actions.php");
 }
 
+wp_enqueue_style("jquery.tablesorter","//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.17.1/css/theme.default.css");
+wp_enqueue_script("jquery.tablesorter","//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.17.1/jquery.tablesorter.min.js");
+
 wp_enqueue_style("issue-admin",plugins_url("issue-admin.css",__FILE__));
+wp_enqueue_script("issue-admin",plugins_url("issue-admin.js",__FILE__));
 
 ?>
 
@@ -95,7 +99,7 @@ foreach ( $year_result as $year ) {
   if ($issue_posts) {
     echo "<h3>Posts in Issue $the_issue of $the_year</h3>";
     ?>
-    <table class="articles-in-issue">
+    <table class="articles-in-issue tablesorter">
     <thead><tr>
       <td>Title</td>
       <td>Category</td>
@@ -104,6 +108,7 @@ foreach ( $year_result as $year ) {
       <td>Post Location</td>
       <td>Edit</td>
     </tr></thead>
+    <tbody>
     <?php
     while ($issue_posts->have_posts()) {
       echo '<tr>';
@@ -116,14 +121,14 @@ foreach ( $year_result as $year ) {
       }
       echo '</td>';
       echo '<td>' . $post->post_status . "</td>";
-      echo '<td>' . get_the_date() . " @ " . get_the_time() . "</td>";
+      echo '<td class="wp-date">' . get_the_date() . " @ " . get_the_time() . "</td>";
       echo '<td>' . get_post_meta($post->ID, "_oxygen_post_location", true) . '</td>';
       echo '<td>'; edit_post_link("Edit"); echo '</td>';
       //echo '<!--'; print_r($post); echo '-->';
       echo "</tr>";
     }
     ?>
-    </table>
+    </tbody></table>
     
     <div class="timestamp-wrap">
     <select id="month" name="month">
