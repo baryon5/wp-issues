@@ -7,7 +7,7 @@ if (!current_user_can("manage_options")) {
 
 function get_posts_in_issue($issue,$year) {
   if (isset($year) && isset($issue)) {
-    $posts_in_issue = new WP_Query(array(
+    $query_args = array(
 					 'post_type' => 'post',
 					 'meta_query' => array(
 							       array(
@@ -22,7 +22,11 @@ function get_posts_in_issue($issue,$year) {
 					 'nopaging' => true,
 					 'orderby' => 'modified',
 					 'order' => 'ASC',
-					 ));
+			);
+    if (isset($_REQUEST["category"])) {
+      $query_args['cat'] = $_REQUEST["category"];
+    }
+    $posts_in_issue = new WP_Query($query_args);
     return $posts_in_issue;
   }
   return false;
@@ -95,6 +99,13 @@ foreach ( $year_result as $year ) {
 <input type="submit" class="button" value="Get Posts" />
 
 <?php
+
+  function category_link($cat) {
+    $link = '<a href="';
+    $link .= $_SERVER['REQUEST_URI'] . "&category=$cat->term_id";
+    return $link . '">' . $cat->cat_name . '</a>';
+  }
+
   $issue_posts = get_posts_in_issue($the_issue,$the_year);
   if ($issue_posts) {
     echo "<h3>Posts in Issue $the_issue of $the_year</h3>";
@@ -113,11 +124,11 @@ foreach ( $year_result as $year ) {
     while ($issue_posts->have_posts()) {
       echo '<tr>';
       $issue_posts->the_post();
-      echo '<td>' . get_the_title() . "</td>";
+      echo '<td><a target="_blank" href="/?preview=true&p=' . $post->ID . '">' . get_the_title() . "</a></td>";
       $categories = get_the_category();
-      echo '<td>' . array_shift($categories)->cat_name;
+      echo '<td>' . category_link(array_shift($categories));
       foreach ($categories as $category) {
-	echo ', ' . $category->cat_name;
+	echo ', ' . category_link($category);
       }
       echo '</td>';
       echo '<td>' . $post->post_status . "</td>";
