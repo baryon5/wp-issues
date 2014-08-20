@@ -39,8 +39,7 @@ function ao_issues_meta_box_callback( $post ) {
   $year = get_post_meta( $post->ID, '_ao_issues_year', true );
   $number = get_post_meta( $post->ID, '_ao_issues_number', true );
   $year = ($year == "")?date("Y"):$year;
-  $number = ($number == "")?"1":$number;
-
+  $number = ($number == "")?get_option("current-issue-default")["current-issue-default"]:$number;
   echo '<style>
 .ao-issue-tagging { float: right; }
 .ao-issue-tagging-label { display: block; height: 32px; }
@@ -112,8 +111,79 @@ function init_ao_issue_pages() {
 }
 
 
+
 if (is_admin()) {
   add_action( 'add_meta_boxes', 'ao_issues_add_meta_box' );
   add_action( 'save_post', 'ao_issues_save_meta_box_data' );
   add_action( 'admin_menu', 'init_ao_issue_pages');
+
+
+  function validate_current_issue($val) {
+    return $val;
+  }
+
+  function issue_management_settings()
+  {
+    ?>
+    <div class="section panel">
+      <h1>Issue Management &ndash; Settings</h1>
+      <form method="post" enctype="multipart/form-data" action="options.php">
+	<?php 
+	   settings_fields('issue-management-settings');
+	   
+	   do_settings_sections('issue-management-settings');
+	   ?>
+	<p class="submit">  
+	  <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />  
+	</p>  
+	
+      </form>
+    </div>
+    <?php
+   }
+
+add_action('admin_menu', 'issue_management_settings_menu');
+
+function issue_management_settings_sdisplay() { }
+
+function issue_management_settings_display($args)
+{
+  extract( $args );
+
+  $option_name = 'current-issue-default';
+
+  $options = get_option( $option_name );
+  $value = esc_attr( $options[$id] );
+
+  switch ( $type ) {  
+  case 'text':
+    echo "<input class='regular-text$class' type='text' id='$id' name='" . $option_name . "[$id]' value=\"$value\" />";  
+    echo ($desc != '') ? "<br /><span class='description'>$desc</span>" : "";  
+    break;  
+  }
+}
+
+function issue_management_settings_menu() {
+  add_submenu_page( "wp-issues/issue-admin.php", "Issue Management Settings", "Issue Management Settings", "manage_options", "issue-management-settings", "issue_management_settings");
+}
+
+add_action("admin_init", "issue_management_settings_init");
+
+function issue_management_settings_init() {
+  register_setting( "issue-management-settings", "current-issue-default", "validate_current_issue" );
+
+  add_settings_section( 'issue-defaults', 'Current Issue', 'issue_management_settings_sdisplay', 'issue-management-settings' );
+  $field_args = array(
+		      'type'      => 'text',
+		      'id'        => 'current-issue-default',
+		      'name'      => 'current-issue-default',
+		      'desc'      => 'The current default issue number',
+		      'std'       => '',
+		      'label_for' => 'current-issue-default',
+		      'class'     => 'css_class'
+		      );
+
+  add_settings_field( 'current-issue-default', 'Issue Defaults', 'issue_management_settings_display', 'issue-management-settings', 'issue-defaults', $field_args );
+}
+
 }
