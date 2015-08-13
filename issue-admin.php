@@ -114,9 +114,9 @@ foreach ( $year_result as $year ) {
     <thead><tr>
       <td>Title</td>
       <td>Category</td>
+      <td>Tags</td>
       <td>State</td>
       <td>Date and Time</td>
-      <td>Post Location</td>
       <td>Edit</td>
     </tr></thead>
     <tbody>
@@ -131,9 +131,14 @@ foreach ( $year_result as $year ) {
 	echo ', ' . category_link($category);
       }
       echo '</td>';
+      $tags = get_the_tags();
+      echo '<td>' . array_shift($tags)->name;
+      foreach ($tags as $tag) {
+	echo ', ' . $tag->name;
+      }
+      echo '</td>';
       echo '<td>' . $post->post_status . "</td>";
       echo '<td class="wp-date">' . get_the_date() . " @ " . get_the_time() . "</td>";
-      echo '<td>' . get_post_meta($post->ID, "_oxygen_post_location", true) . '</td>';
       echo '<td>'; edit_post_link("Edit"); echo '</td>';
       //echo '<!--'; print_r($post); echo '-->';
       echo "</tr>";
