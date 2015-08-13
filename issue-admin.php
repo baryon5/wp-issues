@@ -8,20 +8,20 @@ if (!current_user_can("manage_options")) {
 function get_posts_in_issue($issue,$year) {
   if (isset($year) && isset($issue)) {
     $query_args = array(
-					 'post_type' => 'post',
-					 'meta_query' => array(
-							       array(
-								     'key' => '_ao_issues_year',
-								     'value' => $year,
-								     ),
-							       array(
-								     'key' => '_ao_issues_number',
-								     'value' => $issue,
-								     )
-							       ),
-					 'nopaging' => true,
-					 'orderby' => 'modified',
-					 'order' => 'ASC',
+			'post_type' => 'post',
+			'meta_query' => array(
+					      array(
+						    'key' => '_ao_issues_year',
+						    'value' => $year,
+						    ),
+					      array(
+						    'key' => '_ao_issues_number',
+						    'value' => $issue,
+						    )
+					      ),
+			'nopaging' => true,
+			'orderby' => 'modified',
+			'order' => 'ASC',
 			);
     if (isset($_REQUEST["category"])) {
       $query_args['cat'] = $_REQUEST["category"];
@@ -147,63 +147,75 @@ foreach ( $year_result as $year ) {
     </tbody></table>
     
     <div class="timestamp-wrap">
-    <select id="month" name="month">
-    <option value="01">01-Jan</option>
-    <option value="02">02-Feb</option>
-    <option value="03">03-Mar</option>
-    <option value="04">04-Apr</option>
-    <option value="05">05-May</option>
-    <option value="06">06-Jun</option>
-    <option value="07">07-Jul</option>
-    <option value="08">08-Aug</option>
-    <option value="09">09-Sep</option>
-    <option value="10">10-Oct</option>
-    <option value="11">11-Nov</option>
-    <option value="12">12-Dec</option>
-    </select>
-    <select id="day" name="day">
-    <option value="01">01</option>
-    <option value="02">02</option>
-    <option value="03">03</option>
-    <option value="04">04</option>
-    <option value="05">05</option>
-    <option value="06">06</option>
-    <option value="07">07</option>
-    <option value="08">08</option>
-    <option value="09">09</option>
-    <option value="10">10</option>
-    <option value="11">11</option>
-    <option value="12">12</option>
-    <option value="13">13</option>
-    <option value="14">14</option>
-    <option value="15">15</option>
-    <option value="16">16</option>
-    <option value="17">17</option>
-    <option value="18">18</option>
-    <option value="19">19</option>
-    <option value="20">20</option>
-    <option value="21">21</option>
-    <option value="22">22</option>
-    <option value="23">23</option>
-    <option value="24">24</option>
-    <option value="25">25</option>
-    <option value="26">26</option>
-    <option value="27">27</option>
-    <option value="28">28</option>
-    <option value="29">29</option>
-    <option value="30">30</option>
-    <option value="31">31</option>
-    </select>
-    <input type="text" id="year" name="year" value="<?php echo date("Y"); ?>" size="4" maxlength="4" autocomplete="off"> @
-    <select id="time" name="time">
-    <option value="00:00:00">Midnight</option>
-    <option value="09:00:00">9:00 AM</option>
-    <option value="12:00:00">Noon</option>
-    <option value="15:00:00">3:00 PM</option>
-    <option value="18:00:00">6:00 PM</option>
-    <option value="21:00:00">9:00 PM</option>
-    </select>
-    <button type="submit" class="button" name="action" value="schedule" formmethod="POST">Set Publish Date and Schedule All</button>
+      <select id="month" name="month">
+	<option value="01">01-Jan</option>
+	<option value="02">02-Feb</option>
+	<option value="03">03-Mar</option>
+	<option value="04">04-Apr</option>
+	<option value="05">05-May</option>
+	<option value="06">06-Jun</option>
+	<option value="07">07-Jul</option>
+	<option value="08">08-Aug</option>
+	<option value="09">09-Sep</option>
+	<option value="10">10-Oct</option>
+	<option value="11">11-Nov</option>
+	<option value="12">12-Dec</option>
+      </select>
+      <select id="day" name="day">
+	<option value="01">01</option>
+	<option value="02">02</option>
+	<option value="03">03</option>
+	<option value="04">04</option>
+	<option value="05">05</option>
+	<option value="06">06</option>
+	<option value="07">07</option>
+	<option value="08">08</option>
+	<option value="09">09</option>
+	<option value="10">10</option>
+	<option value="11">11</option>
+	<option value="12">12</option>
+	<option value="13">13</option>
+	<option value="14">14</option>
+	<option value="15">15</option>
+	<option value="16">16</option>
+	<option value="17">17</option>
+	<option value="18">18</option>
+	<option value="19">19</option>
+	<option value="20">20</option>
+	<option value="21">21</option>
+	<option value="22">22</option>
+	<option value="23">23</option>
+	<option value="24">24</option>
+	<option value="25">25</option>
+	<option value="26">26</option>
+	<option value="27">27</option>
+	<option value="28">28</option>
+	<option value="29">29</option>
+	<option value="30">30</option>
+	<option value="31">31</option>
+      </select>
+      <input type="text" id="year" name="year" value="<?php echo date("Y"); ?>" size="4" maxlength="4" autocomplete="off"> @
+      <select id="time" name="time">
+	<option value="00">12 AM</option>
+	<option value="09">9 AM</option>
+	<option value="11">11 AM</option>
+	<option value="12">12 PM</option>
+	<option value="15">3 PM</option>
+	<option value="18">6 PM</option>
+	<option value="21">9 PM</option>
+      </select> :
+      <select id="time_min" name="time_min">
+	<option value="00">00</option>
+	<option value="10">10</option>
+	<option value="15">15</option>
+	<option value="20">20</option>
+	<option value="30">30</option>
+	<option value="40">40</option>
+	<option value="45">45</option>
+	<option value="50">50</option>
+	<option value="55">55</option>
+      </select>
+      <button type="submit" class="button" name="action" value="schedule" formmethod="POST">Set Publish Date and Schedule All</button>
     </div>
 
     <?php

@@ -118,7 +118,7 @@ if (is_admin()) {
   add_action( 'admin_menu', 'init_ao_issue_pages');
 
 
-  function validate_current_issue($val) {
+  function validate_setting_field($val) {
     return $val;
   }
 
@@ -129,9 +129,11 @@ if (is_admin()) {
       <h1>Issue Management &ndash; Settings</h1>
       <form method="post" enctype="multipart/form-data" action="options.php">
 	<?php 
-	   settings_fields('issue-management-settings');
-	   
+	   settings_fields('issue-management-settings');	   
 	   do_settings_sections('issue-management-settings');
+
+	   settings_fields('hp-override-settings');
+	   do_settings_sections('hp-override-settings');
 	   ?>
 	<p class="submit">  
 	  <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />  
@@ -144,7 +146,7 @@ if (is_admin()) {
 
 add_action('admin_menu', 'issue_management_settings_menu');
 
-function issue_management_settings_sdisplay() { }
+function void_settings_sdisplay() { }
 
 function issue_management_settings_display($args)
 {
@@ -169,10 +171,92 @@ function issue_management_settings_menu() {
 
 add_action("admin_init", "issue_management_settings_init");
 
-function issue_management_settings_init() {
-  register_setting( "issue-management-settings", "current-issue-default", "validate_current_issue" );
+function hp_override_year_settings_display($args)
+{
+  extract( $args );
+  $option_name = 'hp-override-year';
+  $options = get_option( $option_name );
+  $value = esc_attr( $options[$id] );
 
-  add_settings_section( 'issue-defaults', 'Current Issue', 'issue_management_settings_sdisplay', 'issue-management-settings' );
+  global $wpdb;
+  $number_query = "SELECT DISTINCT meta_value FROM  $wpdb->postmeta WHERE meta_key = '_ao_issues_year' ORDER BY meta_value DESC";
+  $number_result = $wpdb->get_results( $number_query );
+  $numbers = array();
+  echo "<select name='" . $option_name . "[$id]' id='$id'>";
+  if ($value) {
+    echo "<option value=\"\">Automatic</option>";
+  } else {
+    echo "<option value=\"\" selected=\"selected\">Automatic</option>";
+  }
+  foreach ( $number_result as $number ) {
+    if ($number->meta_value == $value)
+      echo "<option selected=\"selected\">$number->meta_value</option>";
+    else
+      echo "<option>$number->meta_value</option>";
+  }
+  echo '</select>';
+  echo ($desc != '') ? "<br /><span class='description'>$desc</span>" : "";  
+}
+
+function hp_override_issue_settings_display($args)
+{
+  extract( $args );
+  $option_name = 'hp-override-issue';
+  $options = get_option( $option_name );
+  $value = esc_attr( $options[$id] );
+
+  global $wpdb;
+  $number_query = "SELECT DISTINCT meta_value FROM  $wpdb->postmeta WHERE meta_key = '_ao_issues_number' ORDER BY meta_value DESC";
+  $number_result = $wpdb->get_results( $number_query );
+  $numbers = array();
+  echo "<select name='" . $option_name . "[$id]' id='$id'>";
+  if ($value) {
+    echo "<option value=\"\">Automatic</option>";
+  } else {
+    echo "<option value=\"\" selected=\"selected\">Automatic</option>";
+  }
+  foreach ( $number_result as $number ) {
+    if ($number->meta_value == $value)
+      echo "<option selected=\"selected\">$number->meta_value</option>";
+    else
+      echo "<option>$number->meta_value</option>";
+  }
+  echo '</select>';
+  echo ($desc != '') ? "<br /><span class='description'>$desc</span>" : "";
+}
+
+
+function hp_override_category_settings_display($args)
+{
+  extract( $args );
+  $option_name = 'hp-override-category';
+  $options = get_option( $option_name );
+  $value = esc_attr( $options[$id] );
+
+  echo "<select name='" . $option_name . "[$id]' id='$id'>";
+  if ($value) {
+    echo "<option value=\"\">Use Defaults</option>";
+  } else {
+    echo "<option value=\"\" selected=\"selected\">Use Defaults</option>";
+  }
+  $categories = get_categories(array("orderby"=>"count","order"=>"DESC")); 
+  foreach ($categories as $category) {
+      echo '<option value="'.$category->category_nicename.'"';
+    if ($category->category_nicename == $value) {
+      echo ' selected="selected">';
+    } else {
+      echo '>';
+    }
+    echo $category->cat_name .'</option>';
+  }
+  echo '</select>';
+  echo ($desc != '') ? "<br /><span class='description'>$desc</span>" : "";
+}
+
+function issue_management_settings_init() {
+  register_setting( "issue-management-settings", "current-issue-default", "validate_setting_field" );
+
+  add_settings_section( 'issue-defaults', 'Current Issue', 'void_settings_sdisplay', 'issue-management-settings' );
   $field_args = array(
 		      'type'      => 'text',
 		      'id'        => 'current-issue-default',
@@ -182,8 +266,45 @@ function issue_management_settings_init() {
 		      'label_for' => 'current-issue-default',
 		      'class'     => 'css_class'
 		      );
-
   add_settings_field( 'current-issue-default', 'Issue Defaults', 'issue_management_settings_display', 'issue-management-settings', 'issue-defaults', $field_args );
+
+  register_setting( "hp-override-settings", "hp-override-year", "validate_setting_field" );
+  register_setting( "hp-override-settings", "hp-override-issue", "validate_setting_field" );
+  register_setting( "hp-override-settings", "hp-override-category", "validate_setting_field" );
+
+  add_settings_section( 'hp-overrides', 'Homepage Overrides', 'void_settings_sdisplay', 'hp-override-settings' );
+
+  $field_args = array(
+		      'type'      => 'text',
+		      'id'        => 'hp-override-year',
+		      'name'      => 'hp-override-year',
+		      'desc'      => 'Year to display on the homepage.',
+		      'std'       => '',
+		      'label_for' => 'hp-override-year',
+		      'class'     => 'css_class'
+		      );
+  add_settings_field( 'hp-override-year', 'Current Year', 'hp_override_year_settings_display', 'hp-override-settings', 'hp-overrides', $field_args );
+  $field_args = array(
+		      'type'      => 'text',
+		      'id'        => 'hp-override-issue',
+		      'name'      => 'hp-override-issue',
+		      'desc'      => 'Issue to display on the homepage.',
+		      'std'       => '',
+		      'label_for' => 'hp-override-issue',
+		      'class'     => 'css_class'
+		      );
+  add_settings_field( 'hp-override-issue', 'Current Issue', 'hp_override_issue_settings_display', 'hp-override-settings', 'hp-overrides', $field_args );
+  $field_args = array(
+		      'type'      => 'text',
+		      'id'        => 'hp-override-category',
+		      'name'      => 'hp-override-category',
+		      'desc'      => 'Category to display on the homepage.',
+		      'std'       => '',
+		      'label_for' => 'hp-override-category',
+		      'class'     => 'css_class'
+		      );
+  add_settings_field( 'hp-override-category', 'Category Override', 'hp_override_category_settings_display', 'hp-override-settings', 'hp-overrides', $field_args );
+
 }
 
 }

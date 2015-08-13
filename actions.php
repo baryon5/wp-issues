@@ -7,7 +7,7 @@ if ($_POST["action"] == "schedule") {
     $post->post_status = "publish";
 
     $date = $_POST["year"] . "-" . $_POST["month"] . "-" . $_POST["day"] . " ";
-    $date = $date . $_POST["time"];
+    $date = $date . $_POST["time"] . ":" . $_POST["time_min"] . ":00";
     $gmt_date = get_gmt_from_date($date);
 
     $post->post_date = $date;
