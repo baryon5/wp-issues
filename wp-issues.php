@@ -131,10 +131,17 @@ if (is_admin()) {
 	<?php 
 	   settings_fields('issue-management-settings');	   
 	   do_settings_sections('issue-management-settings');
-
-	   settings_fields('hp-override-settings');
-	   do_settings_sections('hp-override-settings');
 	   ?>
+	<p class="submit">  
+	  <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />  
+	</p>
+      </form>
+	<h1>Home Page Overrides</h1>
+	<form method="post" enctype="multipart/form-data" action="options.php">
+	 <?php 
+	  settings_fields('hp-override-settings');
+	  do_settings_sections('hp-override-settings');
+	  ?>
 	<p class="submit">  
 	  <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />  
 	</p>  
